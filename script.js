@@ -23,18 +23,42 @@ const sections = links
   })
   .filter(Boolean);
 
-function moveIndicatorTo(element) {
+// The pill starts at translateX(0), so its very first positioning would otherwise
+// animate as a slide in from the left edge of the navbar. Resizes should snap too,
+// rather than trailing the cursor by 0.7s.
+let indicatorPlaced = false;
+
+function moveIndicatorTo(element, animate = true) {
   const linkRect = element.getBoundingClientRect();
   const navRect = navbarInner.getBoundingClientRect();
 
   const left = linkRect.left - navRect.left;
+  const snap = !animate || !indicatorPlaced;
+
+  if (snap) {
+    // Fade in on first paint, but land in place instead of travelling there.
+    indicator.style.transition = indicatorPlaced
+      ? "none"
+      : "opacity 0.45s cubic-bezier(0.16, 1, 0.3, 1)";
+  }
 
   indicator.style.width = `${linkRect.width}px`;
   indicator.style.transform = `translateX(${left}px)`;
   indicator.style.opacity = 1;
+
+  if (snap) {
+    indicator.getBoundingClientRect(); // flush before restoring the stylesheet value
+    indicator.style.transition = "";
+  }
+
+  indicatorPlaced = true;
 }
 
 function setActiveLink(targetLink) {
+  // Re-running this mid-flight restarts the pill's 0.7s transition from wherever
+  // it happens to be, which is what made it stutter. Nothing to do if unchanged.
+  if (targetLink.classList.contains("active")) return;
+
   links.forEach((link) => link.classList.remove("active"));
   targetLink.classList.add("active");
   moveIndicatorTo(targetLink);
@@ -48,6 +72,7 @@ links.forEach((link) => {
     const section = document.querySelector(href);
 
     if (section) {
+      lockScrollSpy();
       section.scrollIntoView({ behavior: "smooth", block: "start" });
       updateNavbarAppearance(section);
     }
@@ -71,75 +96,76 @@ function updateNavbarAppearance(activeSection) {
   }
 }
 
-// Scroll spy with IntersectionObserver
+// --- Scroll spy ---------------------------------------------------------
+// A single source of truth. The previous version ran an IntersectionObserver
+// *and* a 10ms-debounced scroll handler, which regularly disagreed about the
+// active section and yanked the pill back and forth.
+
+// Last known visibility of every section, so we can compare all of them at once.
+// The observer only reports sections whose visibility *changed*, so picking the
+// winner from `entries` alone let a section entering at 20% beat the one already
+// filling 80% of the screen -- then lose it again a moment later.
+const sectionRatios = new Map(sections.map(({ section }) => [section, 0]));
+
+function syncActiveSection() {
+  let best = null;
+  let bestRatio = 0;
+
+  sectionRatios.forEach((ratio, section) => {
+    if (ratio > bestRatio) {
+      bestRatio = ratio;
+      best = section;
+    }
+  });
+
+  if (!best || bestRatio <= 0.1) return;
+
+  const match = sections.find((s) => s.section === best);
+  if (match) {
+    setActiveLink(match.link);
+    updateNavbarAppearance(best);
+  }
+}
+
+// While a click-initiated smooth scroll is in flight, ignore what flies past.
+let scrollSpyLocked = false;
+let scrollSpyTimer;
+
+function lockScrollSpy() {
+  scrollSpyLocked = true;
+  clearTimeout(scrollSpyTimer);
+  scrollSpyTimer = setTimeout(unlockScrollSpy, 1000);
+}
+
+function unlockScrollSpy() {
+  if (!scrollSpyLocked) return;
+  clearTimeout(scrollSpyTimer);
+  scrollSpyLocked = false;
+  syncActiveSection();
+}
+
 const observer = new IntersectionObserver(
   (entries) => {
-    // Find the section with the highest intersection ratio
-    let maxRatio = 0;
-    let activeEntry = null;
-
     entries.forEach((entry) => {
-      if (entry.isIntersecting && entry.intersectionRatio > maxRatio) {
-        maxRatio = entry.intersectionRatio;
-        activeEntry = entry;
-      }
+      sectionRatios.set(entry.target, entry.isIntersecting ? entry.intersectionRatio : 0);
     });
 
-    // If we found an active section, update the navbar
-    if (activeEntry && maxRatio > 0.1) {
-      const match = sections.find((s) => s.section === activeEntry.target);
-      if (match) {
-        setActiveLink(match.link);
-        updateNavbarAppearance(activeEntry.target);
-      }
-    }
+    if (scrollSpyLocked) return;
+    syncActiveSection();
   },
   {
-    threshold: [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0], // Multiple thresholds for better detection
-    rootMargin: '-10% 0px -10% 0px', // Trigger when section is in the middle portion of viewport
+    threshold: [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0],
+    rootMargin: "-10% 0px -10% 0px",
   }
 );
 
-// Observe each section
 sections.forEach(({ section }) => observer.observe(section));
 
-// Fallback scroll handler for better detection
-let scrollTimeout;
-window.addEventListener('scroll', () => {
-  clearTimeout(scrollTimeout);
-  scrollTimeout = setTimeout(() => {
-    // Find which section is most visible in viewport
-    let maxVisible = 0;
-    let activeSection = null;
-
-    sections.forEach(({ section }) => {
-      const rect = section.getBoundingClientRect();
-      const viewportHeight = window.innerHeight;
-      
-      // Calculate how much of the section is visible
-      const visibleTop = Math.max(0, -rect.top);
-      const visibleBottom = Math.min(rect.height, viewportHeight - rect.top);
-      const visibleHeight = Math.max(0, visibleBottom - visibleTop);
-      const visibleRatio = visibleHeight / Math.min(rect.height, viewportHeight);
-
-      // Section is considered active if it's in the viewport and has good visibility
-      if (rect.top < viewportHeight * 0.5 && rect.bottom > viewportHeight * 0.3) {
-        if (visibleRatio > maxVisible) {
-          maxVisible = visibleRatio;
-          activeSection = section;
-        }
-      }
-    });
-
-    if (activeSection && maxVisible > 0.2) {
-      const match = sections.find((s) => s.section === activeSection);
-      if (match) {
-        setActiveLink(match.link);
-        updateNavbarAppearance(activeSection);
-      }
-    }
-  }, 10);
-});
+// Release the lock as soon as the smooth scroll actually finishes, rather than
+// always waiting out the 1s fallback above.
+if ("onscrollend" in window) {
+  window.addEventListener("scrollend", unlockScrollSpy);
+}
 
 // Timeline initialization - sort events by date and assign alternating sides
 function initializeTimeline() {
@@ -207,7 +233,7 @@ window.addEventListener("load", () => {
 // If window resizes, recalc pill position
 window.addEventListener("resize", () => {
   const active = document.querySelector(".nav-link.active");
-  if (active) moveIndicatorTo(active);
+  if (active) moveIndicatorTo(active, false);
 });
 
 // // Smooth scroll snapping when 10% of next section is visible

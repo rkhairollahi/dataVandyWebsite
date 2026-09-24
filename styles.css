@@ -545,12 +545,12 @@ body::before {
     border: 3px solid #ffffff;
     position: absolute;
     cursor: pointer;
-    transition: transform 0.4s ease, box-shadow 0.4s ease;
+    transition: scale 0.4s ease, box-shadow 0.4s ease;
   }
 
   /* 2 images on top, 1 on bottom */
   .event-image:nth-child(1) {
-    transform: rotate(-8deg);
+    rotate: -8deg;
     z-index: 3;
     top: 0;
     left: 0;
@@ -558,7 +558,7 @@ body::before {
   }
 
   .event-image:nth-child(2) {
-    transform: rotate(5deg);
+    rotate: 5deg;
     z-index: 2;
     top: 0;
     left: 80px;
@@ -567,7 +567,7 @@ body::before {
   }
 
   .event-image:nth-child(3) {
-    transform: rotate(-3deg);
+    rotate: -3deg;
     z-index: 1;
     top: 100px;
     left: 40px;
@@ -575,52 +575,45 @@ body::before {
     animation-delay: 1s;
   }
 
-  /* Enlarge timeline images on hover */
-  .event-image:nth-child(1):hover {
-    animation: none;
-    transform: translate(3px, -5px) rotate(-6deg) scale(1.5);
-    z-index: 4;
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
-  }
-
-  .event-image:nth-child(2):hover {
-    animation: none;
-    transform: translate(-3px, -5px) rotate(7deg) scale(1.5);
-    z-index: 4;
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
-  }
-
-  .event-image:nth-child(3):hover {
-    animation: none;
-    transform: translate(2px, -4px) rotate(-1deg) scale(1.5);
+  /* Enlarge timeline images on hover.
+     Only `scale` is touched here: the float keyframes own `translate`/`rotate`,
+     so the two compose instead of fighting and the image keeps drifting as it grows. */
+  .event-image:hover {
+    scale: 1.5;
     z-index: 4;
     box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
   }
 
   @keyframes floatImage1 {
     0%, 100% {
-      transform: translate(0, 0) rotate(-8deg);
+      translate: 0 0;
+      rotate: -8deg;
     }
     50% {
-      transform: translate(3px, -5px) rotate(-6deg);
+      translate: 3px -5px;
+      rotate: -6deg;
     }
   }
 
   @keyframes floatImage2 {
     0%, 100% {
-      transform: translate(0, 0) rotate(5deg);
+      translate: 0 0;
+      rotate: 5deg;
     }
     50% {
-      transform: translate(-3px, -5px) rotate(7deg);
+      translate: -3px -5px;
+      rotate: 7deg;
     }
   }
 
   @keyframes floatImage3 {
     0%, 100% {
-      transform: translate(0, 0) rotate(-3deg);
+      translate: 0 0;
+      rotate: -3deg;
     }
     50% {
-      transform: translate(2px, -4px) rotate(-1deg);
+      translate: 2px -4px;
+      rotate: -1deg;
     }
   }
 
