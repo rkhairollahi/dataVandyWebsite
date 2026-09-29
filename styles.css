@@ -804,7 +804,13 @@ body::before {
 
     /* Board Section Responsive */
     .co-presidents {
-      gap: 40px;
+      /* Same grid as everyone else below. As a flex row with a 40px gap these
+         two needed 300px and wrapped onto separate lines on narrow phones;
+         a two-track grid keeps them side by side at any width. */
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      justify-items: center;
+      gap: 30px 20px;
       margin-bottom: 40px;
     }
 
@@ -818,8 +824,11 @@ body::before {
     }
 
     .member-photo {
-      width: 130px;
-      height: 130px;
+      /* Fluid, so a photo can never overflow its track on a narrow screen. */
+      width: 100%;
+      max-width: 130px;
+      height: auto;
+      aspect-ratio: 1;
     }
 
     .member-info {
