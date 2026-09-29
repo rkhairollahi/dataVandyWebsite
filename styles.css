@@ -667,7 +667,9 @@ body::before {
 
   .board-members {
     display: grid;
-    grid-template-columns: repeat(5, 12%);
+    /* Four across, so the eight non-president members read as 4 + 4
+       beneath the two co-presidents. */
+    grid-template-columns: repeat(4, 12%);
     justify-items: center;
     justify-content: center;
     gap: 30px 50px;
