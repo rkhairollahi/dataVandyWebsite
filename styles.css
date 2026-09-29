@@ -824,11 +824,11 @@ body::before {
     }
 
     .member-photo {
-      /* Fluid, so a photo can never overflow its track on a narrow screen. */
-      width: 100%;
-      max-width: 130px;
-      height: auto;
-      aspect-ratio: 1;
+      /* Keep a definite height: .member-image is height:100%, which cannot
+         resolve against an auto-height parent and collapsed the photos to
+         nothing on mobile. */
+      width: 130px;
+      height: 130px;
     }
 
     .member-info {
