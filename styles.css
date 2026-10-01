@@ -78,19 +78,39 @@ body::before {
     margin-top: -60px;
 }
 
-.hero-section::after {
-    content: '';
+/* Hero background slideshow. Replaces the old single-image ::after: one layer
+   per image, stacked, with only the active one opaque. Fading the outgoing
+   layer out while the incoming one fades in means there is never a gap. */
+.hero-slideshow {
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background-image: url('assets/event_3/580122042_17899807821317967_3272576550500161026_n.jpg');
+    z-index: 0;
+}
+
+.hero-slide {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
-    /* filter: blur(1.5px); */
-    z-index: 0;
+    opacity: 0;
+    transition: opacity 1.4s ease-in-out;
+}
+
+.hero-slide.is-active {
+    opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .hero-slide {
+        transition: none;
+    }
 }
 
 .hero-section::before {
@@ -353,6 +373,21 @@ body::before {
   .navbar.dark .nav-link.active {
     color: #000000;
     font-weight: 600;
+  }
+
+  /* Light photo behind the pill. Toggled from measured pixel luminance in
+     script.js, so it tracks the hero slideshow and scroll position rather
+     than being tied to a particular section. */
+  .navbar.light-bg .navbar-inner {
+    background: rgba(255, 255, 255, 0.3);
+  }
+
+  /* No link-colour override here on purpose: falling through to the base
+     .nav-link rules keeps the text identical to the board section. */
+
+  .navbar.light-bg .nav-indicator {
+    background: rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
   }
   
   /* Sections */

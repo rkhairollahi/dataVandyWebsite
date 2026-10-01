@@ -167,6 +167,147 @@ if ("onscrollend" in window) {
   window.addEventListener("scrollend", unlockScrollSpy);
 }
 
+// --- Hero background slideshow ------------------------------------------
+// Crossfades the hero image every 7s. The slides live in index.html so the
+// first one paints before this runs; here we just move the active class.
+const heroSlides = Array.from(document.querySelectorAll(".hero-slide"));
+const HERO_INTERVAL = 7000;
+
+let heroIndex = Math.max(0, heroSlides.findIndex((s) => s.classList.contains("is-active")));
+let heroTimer;
+
+function showHeroSlide(index) {
+  heroSlides[heroIndex].classList.remove("is-active");
+  heroIndex = (index + heroSlides.length) % heroSlides.length;
+  heroSlides[heroIndex].classList.add("is-active");
+  queueNavbarContrast();
+}
+
+function startHeroSlideshow() {
+  if (heroSlides.length < 2) return;
+  stopHeroSlideshow();
+  heroTimer = setInterval(() => showHeroSlide(heroIndex + 1), HERO_INTERVAL);
+}
+
+function stopHeroSlideshow() {
+  clearInterval(heroTimer);
+}
+
+// A backgrounded tab would otherwise bank up transitions and burn through
+// several slides at once when you come back to it.
+document.addEventListener("visibilitychange", () => {
+  if (document.hidden) stopHeroSlideshow();
+  else startHeroSlideshow();
+});
+
+startHeroSlideshow();
+
+// --- Navbar contrast against the hero photos ----------------------------
+// The hero cycles through images of very different brightness, so no single
+// text colour stays readable. Sample the pixels actually sitting behind the
+// pill and flip to dark text whenever they are light.
+
+const heroSlideshow = document.querySelector(".hero-slideshow");
+const heroImageCache = new Map();
+
+const lumaCanvas = document.createElement("canvas");
+lumaCanvas.width = 24;
+lumaCanvas.height = 6;
+const lumaCtx = lumaCanvas.getContext("2d", { willReadFrequently: true });
+
+// WCAG's crossover: above this luminance, black text out-contrasts white text.
+const LIGHT_BG_THRESHOLD = 0.179;
+
+// Decode each slide's image once so we can read its pixels. The browser has
+// already fetched them for the backgrounds, so these come from cache.
+function slideImage(slide) {
+  const match = /url\(['"]?(.*?)['"]?\)/.exec(slide.style.backgroundImage);
+  if (!match) return null;
+
+  const src = match[1];
+  let img = heroImageCache.get(src);
+  if (!img) {
+    img = new Image();
+    heroImageCache.set(src, img);
+    img.addEventListener("load", queueNavbarContrast, { once: true });
+    img.src = src;
+  }
+  return img.complete && img.naturalWidth ? img : null;
+}
+
+function relativeLuminance(r, g, b) {
+  const linear = (v) => {
+    const c = v / 255;
+    return c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4);
+  };
+  return 0.2126 * linear(r) + 0.7152 * linear(g) + 0.0722 * linear(b);
+}
+
+function updateNavbarContrast() {
+  if (!heroSlideshow || !heroSlides.length) return;
+
+  const navRect = navbarInner.getBoundingClientRect();
+  const heroRect = heroSlideshow.getBoundingClientRect();
+
+  // Once the hero has scrolled out from behind the navbar, the per-section
+  // rules take back over.
+  const overlapsHero = heroRect.top < navRect.bottom && heroRect.bottom > navRect.top;
+  if (!overlapsHero) {
+    navbar.classList.remove("light-bg");
+    return;
+  }
+
+  const img = slideImage(heroSlides[heroIndex]);
+  if (!img) return;
+
+  // Mirror background-size: cover and background-position: center to work out
+  // which part of the source image is under the pill right now.
+  const scale = Math.max(
+    heroRect.width / img.naturalWidth,
+    heroRect.height / img.naturalHeight
+  );
+  const drawnLeft = heroRect.left + (heroRect.width - img.naturalWidth * scale) / 2;
+  const drawnTop = heroRect.top + (heroRect.height - img.naturalHeight * scale) / 2;
+
+  const sx = Math.min(Math.max((navRect.left - drawnLeft) / scale, 0), img.naturalWidth);
+  const sy = Math.min(Math.max((navRect.top - drawnTop) / scale, 0), img.naturalHeight);
+  const sw = Math.min(Math.max(navRect.width / scale, 1), img.naturalWidth - sx);
+  const sh = Math.min(Math.max(navRect.height / scale, 1), img.naturalHeight - sy);
+
+  let luma;
+  try {
+    lumaCtx.drawImage(img, sx, sy, sw, sh, 0, 0, lumaCanvas.width, lumaCanvas.height);
+    const { data } = lumaCtx.getImageData(0, 0, lumaCanvas.width, lumaCanvas.height);
+    let sum = 0;
+    for (let i = 0; i < data.length; i += 4) {
+      sum += relativeLuminance(data[i], data[i + 1], data[i + 2]);
+    }
+    luma = sum / (data.length / 4);
+  } catch (err) {
+    // Tainted canvas -- happens when the page is opened over file:// rather
+    // than served. Leave the stylesheet colours as they are.
+    return;
+  }
+
+  navbar.classList.toggle("light-bg", luma > LIGHT_BG_THRESHOLD);
+}
+
+// Scrolling moves the photo under the fixed navbar, so this has to re-run --
+// but at most once a frame, and never mid-layout.
+let contrastQueued = false;
+function queueNavbarContrast() {
+  if (contrastQueued) return;
+  contrastQueued = true;
+  requestAnimationFrame(() => {
+    contrastQueued = false;
+    updateNavbarContrast();
+  });
+}
+
+window.addEventListener("scroll", queueNavbarContrast, { passive: true });
+window.addEventListener("resize", queueNavbarContrast);
+queueNavbarContrast();
+
 // Timeline initialization - sort events by date and assign alternating sides
 function initializeTimeline() {
   const timelineEvents = document.querySelectorAll('.timeline-event');
