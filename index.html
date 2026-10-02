@@ -276,29 +276,34 @@
         <div class="section-content">
             <h2 class="section-title">Gallery</h2>
             <div class="gallery-container">
-                <div class="gallery-grid">
-                    <div class="gallery-item">
-                        <img src="assets/gallery/581016050_17900542782317967_3638588456103311419_n.jpg" alt="Gallery Photo" class="gallery-image">
-                    </div>
-                    <div class="gallery-item">
-                        <img src="assets/gallery/581555866_17900542761317967_2779962735382237857_n.jpg" alt="Gallery Photo" class="gallery-image">
-                    </div>
-                    <div class="gallery-item">
-                        <img src="assets/gallery/581718191_17900542839317967_958593253550176405_n.jpg" alt="Gallery Photo" class="gallery-image">
-                    </div>
-                    <div class="gallery-item">
-                        <img src="assets/gallery/582690912_17900542821317967_719208588000593291_n.jpg" alt="Gallery Photo" class="gallery-image">
-                    </div>
-                    <div class="gallery-item">
-                        <img src="assets/gallery/582706402_17900542848317967_8750435350169963447_n.jpg" alt="Gallery Photo" class="gallery-image">
-                    </div>
-                    <div class="gallery-item">
-                        <img src="assets/gallery/583314407_17900542830317967_2876748802694847924_n.jpg" alt="Gallery Photo" class="gallery-image">
-                    </div>
+                <div class="gallery-grid" id="galleryFolders">
+                    <!-- Event folders are rendered here by script.js -->
                 </div>
             </div>
         </div>
     </section>
+
+    <!-- Gallery Folder Modal -->
+    <div class="gallery-modal" id="galleryModal" aria-hidden="true">
+        <div class="gallery-modal-backdrop" id="galleryModalBackdrop"></div>
+        <div class="gallery-modal-content">
+            <button class="gallery-modal-close" id="galleryModalClose" aria-label="Close folder">&times;</button>
+            <div class="gallery-modal-header">
+                <h3 class="gallery-modal-title" id="galleryModalTitle"></h3>
+                <p class="gallery-modal-date" id="galleryModalDate"></p>
+            </div>
+            <div class="gallery-modal-grid" id="galleryModalGrid"></div>
+        </div>
+    </div>
+
+    <!-- Gallery Lightbox -->
+    <div class="gallery-lightbox" id="galleryLightbox" aria-hidden="true">
+        <div class="gallery-lightbox-backdrop" id="galleryLightboxBackdrop"></div>
+        <button class="gallery-lightbox-close" id="galleryLightboxClose" aria-label="Close photo">&times;</button>
+        <button class="gallery-lightbox-nav gallery-lightbox-prev" id="galleryLightboxPrev" aria-label="Previous photo">&#8249;</button>
+        <img class="gallery-lightbox-image" id="galleryLightboxImage" src="" alt="Event photo">
+        <button class="gallery-lightbox-nav gallery-lightbox-next" id="galleryLightboxNext" aria-label="Next photo">&#8250;</button>
+    </div>
 
     <!-- Contact Us Section -->
     <footer class="site-footer">
