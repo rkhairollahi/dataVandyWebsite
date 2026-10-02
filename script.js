@@ -168,10 +168,10 @@ if ("onscrollend" in window) {
 }
 
 // --- Hero background slideshow ------------------------------------------
-// Crossfades the hero image every 7s. The slides live in index.html so the
+// Crossfades the hero image every 4s. The slides live in index.html so the
 // first one paints before this runs; here we just move the active class.
 const heroSlides = Array.from(document.querySelectorAll(".hero-slide"));
-const HERO_INTERVAL = 7000;
+const HERO_INTERVAL = 4000;
 
 let heroIndex = Math.max(0, heroSlides.findIndex((s) => s.classList.contains("is-active")));
 let heroTimer;
@@ -432,3 +432,231 @@ window.addEventListener("resize", () => {
 //     }
 //   });
 // });
+
+// ===== Gallery: event folders, modal, and lightbox =====
+(function () {
+  const galleryEvents = [
+    {
+      id: "event_6",
+      title: "Good Samaritan Health & Rehab",
+      date: "February 1, 2026",
+      images: [
+        "626664796_17909670510317967_3347637602918455251_n.jpg",
+        "626683967_17909670474317967_627333904668918025_n.jpg",
+        "626793283_17909670528317967_8980544576082639817_n.jpg",
+        "626795217_17909670456317967_6367776910075045014_n.jpg",
+        "626805440_17909670483317967_6667840804003855898_n.jpg",
+        "626816884_17909670537317967_3951144604466671041_n.jpg",
+        "626817642_17909670501317967_5271512876663942638_n.jpg",
+        "626854149_17909670465317967_2877280660155607181_n.jpg",
+        "627052595_17909670492317967_4941701429022270661_n.jpg",
+        "627061149_17909670519317967_4594874291731576434_n.jpg",
+        "627536165_17909670549317967_7149988717994929381_n.jpg"
+      ]
+    },
+    {
+      id: "event_5",
+      title: "Mary Queen of Angels",
+      date: "January 17, 2026",
+      images: [
+        "618377689_17907715485317967_5165222640270512759_n.jpg",
+        "618418945_17907715455317967_8301420804411218326_n.jpg",
+        "618422068_17907715428317967_6446790028133814554_n.jpg",
+        "618471819_17907715476317967_3284067721528698121_n.jpg",
+        "618517245_17907715542317967_5449571890238351629_n.jpg",
+        "618563239_17907715530317967_7444009963644568200_n.jpg",
+        "618572933_17907715506317967_5162019255611604626_n.jpg",
+        "618601334_17907715440317967_8422847254430564225_n.jpg",
+        "618687199_17907715521317967_1459697716959807515_n.jpg",
+        "618752886_17907715563317967_9180399645492476216_n.jpg",
+        "618838891_17907715494317967_3085795122612639816_n.jpg",
+        "618961535_17907715554317967_3885032454097919594_n.jpg",
+        "618980718_17907715467317967_6302436728395035895_n.jpg"
+      ]
+    },
+    {
+      id: "event_4",
+      title: "Good Samaritan Health and Rehab",
+      date: "November 15, 2025",
+      images: [
+        "582090489_17900542791317967_2061582005305735250_n.jpg",
+        "582756780_17900542770317967_886733324901275651_n.jpg",
+        "584370296_17900542749317967_262403425585232433_n.jpg",
+        "584370802_17900542809317967_8258756284557144404_n.jpg",
+        "584371763_17900542800317967_4269287582637179073_n.jpg"
+      ]
+    },
+    {
+      id: "event_3",
+      title: "Mary Queen of Angels",
+      date: "November 8, 2025",
+      images: [
+        "575989958_17899807770317967_3709832481157420682_n.jpg",
+        "576543886_17899807794317967_8858097982227869552_n.jpg",
+        "579535782_17899807812317967_7597299834075637898_n.jpg",
+        "579703776_17899807803317967_5152020656768806861_n.jpg",
+        "580122042_17899807821317967_3272576550500161026_n.jpg",
+        "580481746_17899807779317967_7128670871873576957_n.jpg"
+      ]
+    },
+    {
+      id: "event_2",
+      title: "Mary Queen of Angels",
+      date: "March 29, 2025",
+      images: [
+        "487403761_17873394423317967_546712335750715114_n.jpg",
+        "487840407_17873394387317967_6563192140513706333_n.jpg",
+        "487900099_17873394414317967_3893010978400188908_n.jpg",
+        "487929627_17873394405317967_1012966909196393917_n.jpg",
+        "488039233_17873394396317967_8529007538106889498_n.jpg",
+        "488176050_17873394378317967_1907648838060366140_n.jpg"
+      ]
+    },
+    {
+      id: "event_1",
+      title: "Mary Queen of Angels",
+      date: "February 9, 2025",
+      images: [
+        "476725840_17866521450317967_5757192789420668294_n(1).jpg",
+        "476747268_17866521429317967_861514148137174199_n(1).jpg",
+        "476768139_17866521438317967_2672404335589123809_n(1).jpg",
+        "476840386_17866521459317967_4738554115081060287_n(1).jpg",
+        "477054213_17866521399317967_6068206461589121577_n(1).jpg",
+        "477187043_17866521420317967_9117332202190163355_n(1).jpg",
+        "478033757_17866521480317967_1117510641328471645_n(1).jpg"
+      ]
+    }
+  ];
+
+  const foldersContainer = document.getElementById("galleryFolders");
+  if (!foldersContainer) return;
+
+  const modal = document.getElementById("galleryModal");
+  const modalBackdrop = document.getElementById("galleryModalBackdrop");
+  const modalClose = document.getElementById("galleryModalClose");
+  const modalTitle = document.getElementById("galleryModalTitle");
+  const modalDate = document.getElementById("galleryModalDate");
+  const modalGrid = document.getElementById("galleryModalGrid");
+
+  const lightbox = document.getElementById("galleryLightbox");
+  const lightboxBackdrop = document.getElementById("galleryLightboxBackdrop");
+  const lightboxClose = document.getElementById("galleryLightboxClose");
+  const lightboxImage = document.getElementById("galleryLightboxImage");
+  const lightboxPrev = document.getElementById("galleryLightboxPrev");
+  const lightboxNext = document.getElementById("galleryLightboxNext");
+
+  let activeEvent = null;
+  let activeIndex = 0;
+
+  function imagePath(event, filename) {
+    return `assets/${event.id}/${filename}`;
+  }
+
+  function renderFolders() {
+    galleryEvents.forEach((event) => {
+      const folder = document.createElement("div");
+      folder.className = "gallery-folder";
+      folder.setAttribute("role", "button");
+      folder.setAttribute("tabindex", "0");
+      folder.setAttribute("aria-label", `Open photos from ${event.title}, ${event.date}`);
+      folder.innerHTML = `
+        <div class="folder-thumb" style="background-image: url('${imagePath(event, event.images[0])}')">
+          <span class="folder-count">${event.images.length} photos</span>
+        </div>
+        <div class="folder-info">
+          <div class="folder-title">${event.title}</div>
+          <div class="folder-date">${event.date}</div>
+        </div>
+      `;
+      folder.addEventListener("click", () => openFolder(event));
+      folder.addEventListener("keydown", (e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          openFolder(event);
+        }
+      });
+      foldersContainer.appendChild(folder);
+    });
+  }
+
+  function openFolder(event) {
+    activeEvent = event;
+    modalTitle.textContent = event.title;
+    modalDate.textContent = event.date;
+    modalGrid.innerHTML = "";
+    event.images.forEach((filename, index) => {
+      const img = document.createElement("img");
+      img.src = imagePath(event, filename);
+      img.alt = `${event.title} photo ${index + 1}`;
+      img.className = "gallery-modal-image";
+      img.addEventListener("click", () => openLightbox(index));
+      modalGrid.appendChild(img);
+    });
+    modal.classList.add("is-open");
+    modal.setAttribute("aria-hidden", "false");
+    document.body.style.overflow = "hidden";
+  }
+
+  function closeFolder() {
+    modal.classList.remove("is-open");
+    modal.setAttribute("aria-hidden", "true");
+    if (!lightbox.classList.contains("is-open")) {
+      document.body.style.overflow = "";
+    }
+  }
+
+  function openLightbox(index) {
+    if (!activeEvent) return;
+    activeIndex = index;
+    updateLightboxImage();
+    lightbox.classList.add("is-open");
+    lightbox.setAttribute("aria-hidden", "false");
+    document.body.style.overflow = "hidden";
+  }
+
+  function closeLightbox() {
+    lightbox.classList.remove("is-open");
+    lightbox.setAttribute("aria-hidden", "true");
+    if (!modal.classList.contains("is-open")) {
+      document.body.style.overflow = "";
+    }
+  }
+
+  function updateLightboxImage() {
+    if (!activeEvent) return;
+    const filename = activeEvent.images[activeIndex];
+    lightboxImage.src = imagePath(activeEvent, filename);
+    lightboxImage.alt = `${activeEvent.title} photo ${activeIndex + 1}`;
+  }
+
+  function showPrev() {
+    if (!activeEvent) return;
+    activeIndex = (activeIndex - 1 + activeEvent.images.length) % activeEvent.images.length;
+    updateLightboxImage();
+  }
+
+  function showNext() {
+    if (!activeEvent) return;
+    activeIndex = (activeIndex + 1) % activeEvent.images.length;
+    updateLightboxImage();
+  }
+
+  modalClose.addEventListener("click", closeFolder);
+  modalBackdrop.addEventListener("click", closeFolder);
+  lightboxClose.addEventListener("click", closeLightbox);
+  lightboxBackdrop.addEventListener("click", closeLightbox);
+  lightboxPrev.addEventListener("click", showPrev);
+  lightboxNext.addEventListener("click", showNext);
+
+  document.addEventListener("keydown", (e) => {
+    if (lightbox.classList.contains("is-open")) {
+      if (e.key === "Escape") closeLightbox();
+      if (e.key === "ArrowLeft") showPrev();
+      if (e.key === "ArrowRight") showNext();
+    } else if (modal.classList.contains("is-open") && e.key === "Escape") {
+      closeFolder();
+    }
+  });
+
+  renderFolders();
+})();
