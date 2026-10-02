@@ -168,10 +168,10 @@ if ("onscrollend" in window) {
 }
 
 // --- Hero background slideshow ------------------------------------------
-// Crossfades the hero image every 7s. The slides live in index.html so the
+// Crossfades the hero image every 4s. The slides live in index.html so the
 // first one paints before this runs; here we just move the active class.
 const heroSlides = Array.from(document.querySelectorAll(".hero-slide"));
-const HERO_INTERVAL = 7000;
+const HERO_INTERVAL = 4000;
 
 let heroIndex = Math.max(0, heroSlides.findIndex((s) => s.classList.contains("is-active")));
 let heroTimer;
