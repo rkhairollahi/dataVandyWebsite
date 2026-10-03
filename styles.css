@@ -539,6 +539,15 @@ body::before {
     box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
   }
 
+  .event-content-linked {
+    cursor: pointer;
+  }
+
+  .event-content-linked:focus-visible {
+    outline: 2px solid #333;
+    outline-offset: 3px;
+  }
+
   .event-dot {
     position: absolute;
     left: 50%;
