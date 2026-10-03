@@ -658,5 +658,37 @@ window.addEventListener("resize", () => {
     }
   });
 
+  function openFolderById(id) {
+    const event = galleryEvents.find((e) => e.id === id);
+    if (event) openFolder(event);
+  }
+
+  // Clicking an event's description box in the timeline jumps down to the
+  // Gallery section and opens that event's photo folder.
+  document.querySelectorAll("[data-gallery-event]").forEach((el) => {
+    el.classList.add("event-content-linked");
+    el.setAttribute("role", "button");
+    el.setAttribute("tabindex", "0");
+
+    const activate = () => {
+      const id = el.getAttribute("data-gallery-event");
+      const gallerySection = document.getElementById("gallery");
+      if (gallerySection) {
+        gallerySection.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+      // Let the smooth scroll get underway before the modal pops in, so it
+      // doesn't open while the page is still jumping to the section.
+      window.setTimeout(() => openFolderById(id), 500);
+    };
+
+    el.addEventListener("click", activate);
+    el.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        activate();
+      }
+    });
+  });
+
   renderFolders();
 })();
