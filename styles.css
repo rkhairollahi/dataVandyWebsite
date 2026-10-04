@@ -425,26 +425,26 @@ body::before {
   }
 
   /* Fundraiser teaser tab --------------------------------------------------
-     A dark glass chip (rather than the navbar's light pill) so it carries
-     its own contrast and doesn't need the hero luminance-sampling trick to
-     stay legible over both photos and plain section backgrounds. */
+     Same translucent glass as the navbar pill (.navbar-inner's base
+     rgba(255,255,255,0.164) + blur(15px)) rather than a bespoke dark chip,
+     so the two read as one design system. */
   .fundraiser-tab {
     position: fixed;
     left: 0;
     top: 50%;
     transform: translateY(-50%);
     z-index: 90;
-    width: 190px;
+    width: 134px;
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 22px;
-    padding: 30px 18px;
-    background: rgba(20, 20, 20, 0.55);
+    gap: 33px;
+    padding: 45px 12px;
+    background: rgba(255, 255, 255, 0.164);
     backdrop-filter: blur(15px);
     -webkit-backdrop-filter: blur(15px);
-    border-radius: 0 24px 24px 0;
+    border-radius: 0 20px 20px 0;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
     color: #ffffff;
     pointer-events: none; /* teaser only -- never blocks clicks to content behind it */
@@ -452,7 +452,7 @@ body::before {
 
   .fundraiser-tab-label {
     font-family: 'Gayathri', sans-serif;
-    font-size: 1.05rem;
+    font-size: 1.1rem;
     font-weight: 700;
     letter-spacing: 0.5px;
     white-space: nowrap;
@@ -462,13 +462,13 @@ body::before {
   .fundraiser-meter-row {
     display: flex;
     align-items: stretch;
-    gap: 10px;
+    gap: 7px;
   }
 
   .fundraiser-meter {
     position: relative;
-    width: 24px;
-    height: 270px;
+    width: 17px;
+    height: 405px;
     border-radius: 999px;
     background: rgba(255, 255, 255, 0.18);
     overflow: hidden;
@@ -476,7 +476,10 @@ body::before {
 
   /* There's no goal set yet, so this is deliberately not a real percentage:
      a one-time settle animation (up, overshoot down, rest partway) that
-     reads as "still finding its level" rather than reported progress. */
+     reads as "still finding its level" rather than reported progress.
+     Extra waypoints + ease-in-out (instead of one constant bezier across
+     the whole run) soften the direction changes at the peak/trough into a
+     smoother spring-like decay instead of three sharp reversals. */
   .fundraiser-meter-fill {
     position: absolute;
     left: 0;
@@ -486,18 +489,42 @@ body::before {
     border-radius: 999px;
     background: linear-gradient(to top, #2e7d32, #66bb6a);
     box-shadow: 0 0 12px rgba(102, 187, 106, 0.55);
-    animation: fundraiserSettle 2.8s cubic-bezier(0.33, 1, 0.68, 1) forwards;
+    animation: fundraiserSettle 3.4s ease-in-out forwards;
   }
 
   @keyframes fundraiserSettle {
     0% {
       height: 0%;
     }
-    40% {
+    10% {
+      height: 12%;
+    }
+    22% {
+      height: 55%;
+    }
+    34% {
+      height: 88%;
+    }
+    42% {
       height: 92%;
     }
-    65% {
+    52% {
+      height: 70%;
+    }
+    62% {
+      height: 42%;
+    }
+    70% {
       height: 25%;
+    }
+    80% {
+      height: 38%;
+    }
+    88% {
+      height: 52%;
+    }
+    94% {
+      height: 61%;
     }
     100% {
       height: 58%;
@@ -519,11 +546,25 @@ body::before {
   }
 
   .fundraiser-tick {
+    display: flex;
+    align-items: center;
+    gap: 5px;
     font-family: 'Gayathri', sans-serif;
     font-size: 0.75rem;
     font-weight: 700;
     color: rgba(255, 255, 255, 0.75);
     text-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+  }
+
+  /* The actual tick mark -- a short dash bridging the meter's edge to its
+     $ label, same idea as ruler gradations. */
+  .fundraiser-tick::before {
+    content: '';
+    display: inline-block;
+    width: 7px;
+    height: 2px;
+    background: rgba(255, 255, 255, 0.75);
+    flex-shrink: 0;
   }
 
   .fundraiser-tab-soon {
