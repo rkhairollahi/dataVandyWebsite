@@ -278,6 +278,7 @@ body::before {
     font-family: 'Gayathri', sans-serif;
     font-size: 1rem;
     font-weight: 600;
+    line-height: 1;
     text-decoration: none;
     text-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
@@ -288,8 +289,18 @@ body::before {
     transition: background 0.3s ease, transform 0.25s ease, box-shadow 0.25s ease;
 }
 
-.mission-cta i {
-    font-size: 0.95rem;
+/* Gayathri's line-box carries extra space below the glyphs, which reads as
+   the label sitting slightly high in the pill; nudging just the text down
+   re-centers it without affecting the icon's own alignment. */
+.mission-cta span {
+    display: inline-block;
+    line-height: 1;
+    transform: translateY(1px);
+}
+
+.mission-cta-icon {
+    display: block;
+    flex-shrink: 0;
 }
 
 .mission-cta:hover {
