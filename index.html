@@ -26,7 +26,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Gayathri:wght@100;400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="styles.css?v=20261006">
+    <link rel="stylesheet" href="styles.css?v=20261007">
 </head>
 <body>
     <header class="navbar">
@@ -44,8 +44,15 @@
          timeline's narrower layout. -->
     <aside class="fundraiser-tab" aria-label="Fundraising campaign: coming soon">
         <div class="fundraiser-tab-label">Fundraiser</div>
-        <div class="fundraiser-meter" aria-hidden="true">
-            <div class="fundraiser-meter-shimmer"></div>
+        <div class="fundraiser-meter-row">
+            <div class="fundraiser-meter" aria-hidden="true">
+                <div class="fundraiser-meter-fill"></div>
+            </div>
+            <div class="fundraiser-meter-ticks" aria-hidden="true">
+                <span class="fundraiser-tick">$$$</span>
+                <span class="fundraiser-tick">$$</span>
+                <span class="fundraiser-tick">$</span>
+            </div>
         </div>
         <div class="fundraiser-tab-soon"><span aria-hidden="true">&#10024;</span> Soon</div>
     </aside>

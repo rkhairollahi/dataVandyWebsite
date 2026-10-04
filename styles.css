@@ -434,74 +434,104 @@ body::before {
     top: 50%;
     transform: translateY(-50%);
     z-index: 90;
+    width: 190px;
+    box-sizing: border-box;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 14px;
-    padding: 18px 10px;
+    gap: 22px;
+    padding: 30px 18px;
     background: rgba(20, 20, 20, 0.55);
     backdrop-filter: blur(15px);
     -webkit-backdrop-filter: blur(15px);
-    border-radius: 0 16px 16px 0;
+    border-radius: 0 24px 24px 0;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
     color: #ffffff;
     pointer-events: none; /* teaser only -- never blocks clicks to content behind it */
   }
 
   .fundraiser-tab-label {
-    writing-mode: vertical-rl;
-    text-orientation: upright;
     font-family: 'Gayathri', sans-serif;
-    font-size: 0.8rem;
+    font-size: 1.05rem;
     font-weight: 700;
-    letter-spacing: 1px;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
     text-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+  }
+
+  .fundraiser-meter-row {
+    display: flex;
+    align-items: stretch;
+    gap: 10px;
   }
 
   .fundraiser-meter {
     position: relative;
-    width: 8px;
-    height: 90px;
+    width: 24px;
+    height: 270px;
     border-radius: 999px;
     background: rgba(255, 255, 255, 0.18);
     overflow: hidden;
   }
 
-  /* Indeterminate shimmer, not a real percentage -- there's no goal set
-     yet, so this only needs to read as "in progress," never as data. */
-  .fundraiser-meter-shimmer {
+  /* There's no goal set yet, so this is deliberately not a real percentage:
+     a one-time settle animation (up, overshoot down, rest partway) that
+     reads as "still finding its level" rather than reported progress. */
+  .fundraiser-meter-fill {
     position: absolute;
     left: 0;
-    top: -36px;
+    bottom: 0;
     width: 100%;
-    height: 36px;
+    height: 0%;
     border-radius: 999px;
-    background: linear-gradient(to bottom, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.85) 50%, rgba(255, 255, 255, 0) 100%);
-    animation: fundraiserShimmer 2.6s ease-in-out infinite;
+    background: linear-gradient(to top, #2e7d32, #66bb6a);
+    box-shadow: 0 0 12px rgba(102, 187, 106, 0.55);
+    animation: fundraiserSettle 2.8s cubic-bezier(0.33, 1, 0.68, 1) forwards;
   }
 
-  @keyframes fundraiserShimmer {
-    0%, 10% {
-      top: -36px;
+  @keyframes fundraiserSettle {
+    0% {
+      height: 0%;
     }
-    90%, 100% {
-      top: 90px;
+    40% {
+      height: 92%;
+    }
+    65% {
+      height: 25%;
+    }
+    100% {
+      height: 58%;
     }
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .fundraiser-meter-shimmer {
+    .fundraiser-meter-fill {
       animation: none;
-      top: 27px;
+      height: 58%;
     }
+  }
+
+  .fundraiser-meter-ticks {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: flex-start;
+  }
+
+  .fundraiser-tick {
+    font-family: 'Gayathri', sans-serif;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.75);
+    text-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
   }
 
   .fundraiser-tab-soon {
     display: flex;
     align-items: center;
-    gap: 4px;
+    gap: 5px;
     font-family: 'Gayathri', sans-serif;
-    font-size: 0.7rem;
+    font-size: 0.8rem;
     font-weight: 600;
     letter-spacing: 0.5px;
     text-transform: uppercase;
