@@ -275,6 +275,31 @@ body::before {
     }
 }
 
+.mission-cta {
+    display: inline-block;
+    margin-top: 36px;
+    padding: 14px 36px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.92);
+    color: #333;
+    font-family: 'Gayathri', sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+    text-decoration: none;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+    opacity: 0;
+    transform: translateY(20px);
+    animation: popUp 0.6s ease-out forwards;
+    animation-delay: 0.9s;
+    transition: transform 0.25s ease, box-shadow 0.25s ease, background 0.25s ease;
+}
+
+.mission-cta:hover {
+    background: #ffffff;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+}
+
 /* Navbar container */
 .navbar {
     position: fixed;
