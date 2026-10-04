@@ -548,6 +548,20 @@ body::before {
     outline-offset: 3px;
   }
 
+  /* On mobile the floating stacked photos are hidden (see below), so this is
+     the only visible cue that the card opens the full photo set -- without
+     it, touch users have no way to discover the click target that desktop's
+     cursor:pointer hints at. Shown at all widths for consistency. */
+  .event-content-linked::after {
+    content: '\1F4F7  View photos';
+    display: inline-block;
+    margin-top: 16px;
+    font-family: 'Gayathri', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #888;
+  }
+
   .event-dot {
     position: absolute;
     left: 50%;
