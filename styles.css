@@ -265,28 +265,37 @@ body::before {
 }
 
 .mission-cta {
-    display: inline-block;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
     margin-top: 36px;
-    padding: 14px 36px;
+    padding: 12px 28px;
     border-radius: 999px;
-    background: rgba(255, 255, 255, 0.92);
-    color: #333;
+    background: rgba(255, 255, 255, 0.164);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    color: #ffffff;
     font-family: 'Gayathri', sans-serif;
     font-size: 1rem;
-    font-weight: 700;
+    font-weight: 600;
     text-decoration: none;
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
     opacity: 0;
     transform: translateY(20px);
     animation: popUp 0.6s ease-out forwards;
     animation-delay: 0.9s;
-    transition: transform 0.25s ease, box-shadow 0.25s ease, background 0.25s ease;
+    transition: background 0.3s ease, transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.mission-cta i {
+    font-size: 0.95rem;
 }
 
 .mission-cta:hover {
-    background: #ffffff;
+    background: rgba(255, 255, 255, 0.3);
     transform: translateY(-2px);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 12px 34px rgba(0, 0, 0, 0.4);
 }
 
 /* Navbar container */
