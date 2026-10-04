@@ -423,7 +423,101 @@ body::before {
     background: rgba(0, 0, 0, 0.1);
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
   }
-  
+
+  /* Fundraiser teaser tab --------------------------------------------------
+     A dark glass chip (rather than the navbar's light pill) so it carries
+     its own contrast and doesn't need the hero luminance-sampling trick to
+     stay legible over both photos and plain section backgrounds. */
+  .fundraiser-tab {
+    position: fixed;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 90;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+    padding: 18px 10px;
+    background: rgba(20, 20, 20, 0.55);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border-radius: 0 16px 16px 0;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+    color: #ffffff;
+    pointer-events: none; /* teaser only -- never blocks clicks to content behind it */
+  }
+
+  .fundraiser-tab-label {
+    writing-mode: vertical-rl;
+    text-orientation: upright;
+    font-family: 'Gayathri', sans-serif;
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+  }
+
+  .fundraiser-meter {
+    position: relative;
+    width: 8px;
+    height: 90px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.18);
+    overflow: hidden;
+  }
+
+  /* Indeterminate shimmer, not a real percentage -- there's no goal set
+     yet, so this only needs to read as "in progress," never as data. */
+  .fundraiser-meter-shimmer {
+    position: absolute;
+    left: 0;
+    top: -36px;
+    width: 100%;
+    height: 36px;
+    border-radius: 999px;
+    background: linear-gradient(to bottom, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.85) 50%, rgba(255, 255, 255, 0) 100%);
+    animation: fundraiserShimmer 2.6s ease-in-out infinite;
+  }
+
+  @keyframes fundraiserShimmer {
+    0%, 10% {
+      top: -36px;
+    }
+    90%, 100% {
+      top: 90px;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .fundraiser-meter-shimmer {
+      animation: none;
+      top: 27px;
+    }
+  }
+
+  .fundraiser-tab-soon {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-family: 'Gayathri', sans-serif;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.85);
+    text-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+  }
+
+  /* Hidden below the same breakpoint the timeline switches layouts at --
+     a left-edge tab at this width would sit right on top of the timeline
+     dot/line (left: 30px). */
+  @media (max-width: 768px) {
+    .fundraiser-tab {
+      display: none;
+    }
+  }
+
   /* Sections */
   .section {
     min-height: 100vh;
