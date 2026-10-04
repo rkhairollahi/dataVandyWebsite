@@ -589,6 +589,7 @@ window.addEventListener("resize", () => {
       img.src = imagePath(event, filename);
       img.alt = `${event.title} photo ${index + 1}`;
       img.className = "gallery-modal-image";
+      img.loading = "lazy";
       img.addEventListener("click", () => openLightbox(index));
       modalGrid.appendChild(img);
     });
