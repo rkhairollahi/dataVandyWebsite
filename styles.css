@@ -28,17 +28,6 @@ body::before {
     pointer-events: none;
 }
 
-/* #customCursor {
-    position: fixed;
-    width: 15px;
-    height: 15px;
-    pointer-events: none;
-    border-radius: 50%;
-    background: radial-gradient(circle at 30% 30%, #ffffff94, #ccccccb3);
-    transform: translate(-50%, -50%);
-    z-index: 1000;
-} */
-
 .container {
     display: flex;
     justify-content: center;

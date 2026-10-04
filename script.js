@@ -1,18 +1,8 @@
 // script.js
-//initCustomCursor();
 const navbar = document.querySelector(".navbar");
 const navbarInner = document.querySelector(".navbar-inner");
 const indicator = document.querySelector(".nav-indicator");
 const links = Array.from(document.querySelectorAll(".nav-link"));
-
-// // --- Custom Cursor ---
-// function initCustomCursor() {
-//     const cursor = document.getElementById('customCursor');
-//     document.addEventListener('mousemove', e => {
-//       cursor.style.left = `${e.clientX}px`;
-//       cursor.style.top  = `${e.clientY}px`;
-//     });
-//   }
 
 // Map links to their sections
 const sections = links
@@ -59,8 +49,12 @@ function setActiveLink(targetLink) {
   // it happens to be, which is what made it stutter. Nothing to do if unchanged.
   if (targetLink.classList.contains("active")) return;
 
-  links.forEach((link) => link.classList.remove("active"));
+  links.forEach((link) => {
+    link.classList.remove("active");
+    link.removeAttribute("aria-current");
+  });
   targetLink.classList.add("active");
+  targetLink.setAttribute("aria-current", "page");
   moveIndicatorTo(targetLink);
 }
 
@@ -376,62 +370,6 @@ window.addEventListener("resize", () => {
   const active = document.querySelector(".nav-link.active");
   if (active) moveIndicatorTo(active, false);
 });
-
-// // Smooth scroll snapping when 10% of next section is visible
-// let isSectionScrolling = false;
-// let lastScrollTop = 0;
-// let scrollDirection = 0; // 1 = down, -1 = up, 0 = unknown
-
-// window.addEventListener('scroll', () => {
-//   if (isSectionScrolling) return;
-  
-//   const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-//   const viewportHeight = window.innerHeight;
-//   const scrollDelta = scrollTop - lastScrollTop;
-  
-//   // Determine scroll direction
-//   if (Math.abs(scrollDelta) > 1) {
-//     scrollDirection = scrollDelta > 0 ? 1 : -1;
-//   }
-//   lastScrollTop = scrollTop;
-  
-//   // Check each section to see if 10% is visible
-//   sections.forEach(({ section }) => {
-//     const rect = section.getBoundingClientRect();
-//     const sectionHeight = section.offsetHeight;
-//     const visibleThreshold = sectionHeight * 0.1; // 10% of section
-    
-//     // Check if scrolling down and 10% of section is visible from bottom
-//     if (scrollDirection === 1 && rect.top < viewportHeight && rect.top > viewportHeight - visibleThreshold) {
-//       // Next section is coming into view from bottom
-//       if (!isSectionScrolling) {
-//         isSectionScrolling = true;
-//         section.scrollIntoView({ 
-//           behavior: 'smooth', 
-//           block: 'start' 
-//         });
-//         setTimeout(() => {
-//           isSectionScrolling = false;
-//         }, 1000);
-//       }
-//     }
-    
-//     // Check if scrolling up and 10% of section is visible from top
-//     if (scrollDirection === -1 && rect.bottom > 0 && rect.bottom < visibleThreshold) {
-//       // Previous section is coming into view from top
-//       if (!isSectionScrolling) {
-//         isSectionScrolling = true;
-//         section.scrollIntoView({ 
-//           behavior: 'smooth', 
-//           block: 'start' 
-//         });
-//         setTimeout(() => {
-//           isSectionScrolling = false;
-//         }, 1000);
-//       }
-//     }
-//   });
-// });
 
 // ===== Gallery: event folders, modal, and lightbox =====
 (function () {
