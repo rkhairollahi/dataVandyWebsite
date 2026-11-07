@@ -819,7 +819,6 @@ body::before {
 
   /* Hide default icon when image is loaded successfully */
   .member-image.loaded {
-    content: '';
     opacity: 1;
   }
 
