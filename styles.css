@@ -1012,6 +1012,15 @@ body::before {
     background-position: center;
   }
 
+  .folder-thumb-image {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
   .folder-thumb::after {
     content: '';
     position: absolute;

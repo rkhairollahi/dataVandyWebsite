@@ -378,6 +378,7 @@ window.addEventListener("resize", () => {
       id: "event_6",
       title: "Good Samaritan Health & Rehab",
       date: "February 1, 2026",
+      alt: "Artwork and photos from a DATA Vandy art therapy session at Good Samaritan Health & Rehab",
       images: [
         "626664796_17909670510317967_3347637602918455251_n.jpg",
         "626683967_17909670474317967_627333904668918025_n.jpg",
@@ -396,6 +397,7 @@ window.addEventListener("resize", () => {
       id: "event_5",
       title: "Mary Queen of Angels",
       date: "January 17, 2026",
+      alt: "Artwork and photos from a DATA Vandy art therapy session at Mary Queen of Angels",
       images: [
         "618377689_17907715485317967_5165222640270512759_n.jpg",
         "618418945_17907715455317967_8301420804411218326_n.jpg",
@@ -416,6 +418,7 @@ window.addEventListener("resize", () => {
       id: "event_4",
       title: "Good Samaritan Health and Rehab",
       date: "November 15, 2025",
+      alt: "Artwork and photos from a DATA Vandy art therapy session at Good Samaritan Health and Rehab",
       images: [
         "582090489_17900542791317967_2061582005305735250_n.jpg",
         "582756780_17900542770317967_886733324901275651_n.jpg",
@@ -428,6 +431,7 @@ window.addEventListener("resize", () => {
       id: "event_3",
       title: "Mary Queen of Angels",
       date: "November 8, 2025",
+      alt: "Artwork and photos from a DATA Vandy art therapy session at Mary Queen of Angels",
       images: [
         "575989958_17899807770317967_3709832481157420682_n.jpg",
         "576543886_17899807794317967_8858097982227869552_n.jpg",
@@ -441,6 +445,7 @@ window.addEventListener("resize", () => {
       id: "event_2",
       title: "Mary Queen of Angels",
       date: "March 29, 2025",
+      alt: "Artwork and photos from a DATA Vandy art therapy session at Mary Queen of Angels",
       images: [
         "487403761_17873394423317967_546712335750715114_n.jpg",
         "487840407_17873394387317967_6563192140513706333_n.jpg",
@@ -454,6 +459,7 @@ window.addEventListener("resize", () => {
       id: "event_1",
       title: "Mary Queen of Angels",
       date: "February 9, 2025",
+      alt: "Artwork and photos from a DATA Vandy art therapy session at Mary Queen of Angels",
       images: [
         "476725840_17866521450317967_5757192789420668294_n(1).jpg",
         "476747268_17866521429317967_861514148137174199_n(1).jpg",
@@ -490,22 +496,13 @@ window.addEventListener("resize", () => {
     return `assets/${event.id}/${filename}`;
   }
 
+  // The folder grid is pre-rendered as static markup in index.html (so folders
+  // and their thumbnails are crawlable without JS); this just wires up the
+  // click/keyboard behavior against the matching galleryEvents entry.
   function renderFolders() {
-    galleryEvents.forEach((event) => {
-      const folder = document.createElement("div");
-      folder.className = "gallery-folder";
-      folder.setAttribute("role", "button");
-      folder.setAttribute("tabindex", "0");
-      folder.setAttribute("aria-label", `Open photos from ${event.title}, ${event.date}`);
-      folder.innerHTML = `
-        <div class="folder-thumb" style="background-image: url('${imagePath(event, event.images[0])}')">
-          <span class="folder-count">${event.images.length} photos</span>
-        </div>
-        <div class="folder-info">
-          <div class="folder-title">${event.title}</div>
-          <div class="folder-date">${event.date}</div>
-        </div>
-      `;
+    foldersContainer.querySelectorAll("[data-gallery-id]").forEach((folder) => {
+      const event = galleryEvents.find((e) => e.id === folder.getAttribute("data-gallery-id"));
+      if (!event) return;
       folder.addEventListener("click", () => openFolder(event));
       folder.addEventListener("keydown", (e) => {
         if (e.key === "Enter" || e.key === " ") {
@@ -513,7 +510,6 @@ window.addEventListener("resize", () => {
           openFolder(event);
         }
       });
-      foldersContainer.appendChild(folder);
     });
   }
 
@@ -525,7 +521,7 @@ window.addEventListener("resize", () => {
     event.images.forEach((filename, index) => {
       const img = document.createElement("img");
       img.src = imagePath(event, filename);
-      img.alt = `${event.title} photo ${index + 1}`;
+      img.alt = `${event.alt} (photo ${index + 1} of ${event.images.length})`;
       img.className = "gallery-modal-image";
       img.addEventListener("click", () => openLightbox(index));
       modalGrid.appendChild(img);
@@ -564,7 +560,7 @@ window.addEventListener("resize", () => {
     if (!activeEvent) return;
     const filename = activeEvent.images[activeIndex];
     lightboxImage.src = imagePath(activeEvent, filename);
-    lightboxImage.alt = `${activeEvent.title} photo ${activeIndex + 1}`;
+    lightboxImage.alt = `${activeEvent.alt} (photo ${activeIndex + 1} of ${activeEvent.images.length})`;
   }
 
   function showPrev() {
